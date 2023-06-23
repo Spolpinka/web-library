@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import pro.sky.lessons.springboot.weblibrary.model.Employee;
 import pro.sky.lessons.springboot.weblibrary.repository.EmployeeRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,24 +19,30 @@ public class EmployeeService {
 
     //get sum of all salaries
     public int sumOfSalaries() {
-        return employeeRepository.getAllEmployees().stream().mapToInt(employee -> employee.getSalary()).sum();
+        return employeeRepository.getAllEmployees().stream()
+                .mapToInt(employee -> employee.getSalary())
+                .sum();
     }
 
     //get Employee with min salary
     public Employee minSalary() {
-        return employeeRepository.getAllEmployees().stream().min((employee1, employee2) -> employee1.getSalary() - employee2.getSalary()).get();
+        return employeeRepository.getAllEmployees().stream()
+                .min(Comparator.comparingInt(Employee::getSalary))
+                .get();
     }
 
     //get Employee with max salary
     public Employee maxSalary() {
-        return employeeRepository.getAllEmployees().stream().max((employee1, employee2) -> employee1.getSalary() - employee2.getSalary()).get();
+        return employeeRepository.getAllEmployees().stream().max(Comparator.comparingInt(Employee::getSalary)).get();
     }
 
     //get employee with salary higher than average
-    public List<Employee> highSalary() {
-        List<Employee> employees = employeeRepository.getAllEmployees();
-        int sumOfSalary = employees.stream().mapToInt(Employee::getSalary).sum();
-        double averageSalary = sumOfSalary / employees.size();
-        return employees.stream().filter(employee -> employee.getSalary() > averageSalary).collect(Collectors.toList());
+    public List<Employee> highSalary(){
+        return employeeRepository.getAllEmployees().stream()
+                .filter(employee -> employee.getSalary() > employeeRepository.getAllEmployees().stream()
+                        .mapToInt(Employee::getSalary)
+                        .average()
+                        .getAsDouble())
+                .collect(Collectors.toList());
     }
 }
