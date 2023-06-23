@@ -33,7 +33,9 @@ public class EmployeeService {
 
     //get Employee with max salary
     public Employee maxSalary() {
-        return employeeRepository.getAllEmployees().stream().max(Comparator.comparingInt(Employee::getSalary)).get();
+        return employeeRepository.getAllEmployees().stream()
+                .max(Comparator.comparingInt(Employee::getSalary))
+                .get();
     }
 
     //get employee with salary higher than average
